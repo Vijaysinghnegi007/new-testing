@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
+// Important: do NOT instantiate Stripe at module load time.
+// This avoids build-time errors when STRIPE_SECRET_KEY is not configured.
 export async function POST(request) {
   try {
     const { amount, bookingData } = await request.json();
@@ -14,6 +14,17 @@ export async function POST(request) {
         { status: 400 }
       );
     }
+
+    const secret = process.env.STRIPE_SECRET_KEY;
+    if (!secret) {
+      console.error('STRIPE_SECRET_KEY is not set. Payment processing is not configured.');
+      return NextResponse.json(
+        { error: 'Payment processing not configured' },
+        { status: 500 }
+      );
+    }
+
+    const stripe = new Stripe(secret);
 
     // Create payment intent
     const paymentIntent = await stripe.paymentIntents.create({
