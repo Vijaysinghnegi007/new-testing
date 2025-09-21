@@ -34,25 +34,74 @@ async function getInitialTours(searchParams) {
     ...(Number.isFinite(durationMax) ? { duration: { lte: durationMax } } : {}),
   };
 
-  const toursRaw = await prisma.tour.findMany({
-    where,
-    take: 24,
-    orderBy: { rating: 'desc' },
-    include: { destination: true },
-  });
+  try {
+    const toursRaw = await prisma.tour.findMany({
+      where,
+      take: 24,
+      orderBy: { rating: 'desc' },
+      include: { destination: true },
+    });
 
-  return toursRaw.map((t) => ({
-    id: t.id,
-    title: t.title,
-    slug: t.slug,
-    images: t.images,
-    duration: t.duration,
-    rating: t.rating,
-    basePrice: t.basePrice,
-    discountPrice: t.discountPrice,
-    category: t.category,
-    destination: t.destination?.name || null,
-  }));
+    return toursRaw.map((t) => ({
+      id: t.id,
+      title: t.title,
+      slug: t.slug,
+      images: t.images,
+      duration: t.duration,
+      rating: t.rating,
+      basePrice: t.basePrice,
+      discountPrice: t.discountPrice,
+      category: t.category,
+      destination: t.destination?.name || null,
+    }));
+  } catch (e) {
+    console.error('DB not available, using demo tours list', e?.message || e);
+    // Fallback demo data so the page still renders in environments without a DB
+    return [
+      {
+        id: 'demo-1',
+        title: 'Bali Cultural Adventure',
+        slug: 'bali-cultural-adventure',
+        images: [
+          'https://images.unsplash.com/photo-1537953773345-d172ccf13cf1?w=800&h=600&fit=crop',
+        ],
+        duration: 7,
+        rating: 4.8,
+        basePrice: 1299,
+        discountPrice: 999,
+        category: 'CULTURAL',
+        destination: 'Bali, Indonesia',
+      },
+      {
+        id: 'demo-2',
+        title: 'Swiss Alps Hiking Experience',
+        slug: 'swiss-alps-hiking-experience',
+        images: [
+          'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop',
+        ],
+        duration: 10,
+        rating: 4.9,
+        basePrice: 2499,
+        discountPrice: 2199,
+        category: 'ADVENTURE',
+        destination: 'Swiss Alps, Switzerland',
+      },
+      {
+        id: 'demo-3',
+        title: 'Maldives Luxury Retreat',
+        slug: 'maldives-luxury-retreat',
+        images: [
+          'https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=800&h=600&fit=crop',
+        ],
+        duration: 5,
+        rating: 5.0,
+        basePrice: 4799,
+        discountPrice: 3999,
+        category: 'LUXURY',
+        destination: 'Maldives',
+      },
+    ];
+  }
 }
 
 export const dynamic = 'force-dynamic';

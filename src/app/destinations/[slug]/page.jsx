@@ -23,19 +23,33 @@ export async function generateMetadata({ params }) {
 
 export default async function DestinationDetailPage({ params }) {
   const { slug } = params
-  const destination = await prisma.destination.findUnique({
-    where: { slug },
-    include: {
-      tours: {
-        where: { isActive: true },
-        orderBy: { rating: 'desc' },
-        take: 12,
+  let destination = null
+  try {
+    destination = await prisma.destination.findUnique({
+      where: { slug },
+      include: {
+        tours: {
+          where: { isActive: true },
+          orderBy: { rating: 'desc' },
+          take: 12,
+        },
       },
-    },
-  })
+    })
+  } catch (e) {
+    console.error('Failed to load destination from DB, slug:', slug, e?.message || e)
+  }
 
   if (!destination || destination.isActive === false) {
-    return notFound()
+    // Graceful fallback (no DB / not found)
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center space-y-3">
+          <h1 className="text-2xl font-bold">Destination Unavailable</h1>
+          <p className="text-muted-foreground">We couldn\'t load this destination right now. Please try again later.</p>
+          <Link href="/destinations" className="text-primary underline">Back to destinations</Link>
+        </div>
+      </div>
+    )
   }
 
   const images = destination.images ? JSON.parse(destination.images) : []
