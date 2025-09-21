@@ -2,10 +2,12 @@ import React from 'react'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
+import T from '@/components/common/T.jsx'
 import { prisma } from '@/lib/prisma'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { MapPin, Star, ArrowRight } from 'lucide-react'
+import MapEmbed from '@/components/maps/MapEmbed.jsx'
 
 export const revalidate = 60
 
@@ -72,9 +74,15 @@ export default async function DestinationDetailPage({ params }) {
             </div>
           )}
 
-          <h2 className="text-2xl font-semibold mb-4">Top Tours in {destination.name}</h2>
+          {(destination.latitude && destination.longitude) && (
+            <div className="mb-8">
+              <MapEmbed lat={destination.latitude} lng={destination.longitude} />
+            </div>
+          )}
+
+          <h2 className="text-2xl font-semibold mb-4"><T k="destinations.topToursIn" f="Top Tours in" /> {destination.name}</h2>
           {destination.tours.length === 0 ? (
-            <p className="text-muted-foreground">No tours available yet for this destination.</p>
+            <p className="text-muted-foreground"><T k="destinations.none" f="No tours available yet for this destination." /></p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {destination.tours.map((tour) => {
@@ -103,7 +111,7 @@ export default async function DestinationDetailPage({ params }) {
                         </div>
                         <Button variant="gradient" asChild>
                           <Link href={`/tours/${tour.slug}`}>
-                            View Details
+                            <T k="actions.viewDetails" f="View Details" />
                             <ArrowRight className="ml-2 h-4 w-4" />
                           </Link>
                         </Button>

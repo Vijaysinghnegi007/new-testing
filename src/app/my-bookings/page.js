@@ -33,7 +33,7 @@ export default function MyBookingsPage() {
     if (status === 'loading') return; // Still loading
     
     if (status === 'unauthenticated') {
-      router.push('/auth/signin?callbackUrl=/my-bookings');
+      router.push('/auth/signin');
       return;
     }
 

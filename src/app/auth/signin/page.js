@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { MapPin, Mail, Lock, Eye, EyeOff } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
 
 // Loading component for better UX
 function LoadingSpinner() {

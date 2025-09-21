@@ -5,24 +5,43 @@ export function cn(...inputs) {
   return twMerge(clsx(inputs))
 }
 
-export function formatPrice(amount, currency = 'USD') {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: currency,
-  }).format(amount);
+function getClientLocale() {
+  try {
+    if (typeof document !== 'undefined') {
+      const m = document.cookie.match(/(?:^|; )LOCALE=(en|es)/)
+      if (m) return m[1] === 'es' ? 'es-ES' : 'en-US'
+    }
+  } catch {}
+  return 'en-US'
 }
 
-export function formatDate(date, options = {}) {
+export function formatPrice(amount, currency = 'USD', locale) {
+  const loc = locale || getClientLocale();
+  try {
+    return new Intl.NumberFormat(loc, {
+      style: 'currency',
+      currency: currency,
+    }).format(amount);
+  } catch {
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(amount)
+  }
+}
+
+export function formatDate(date, options = {}, locale) {
   const defaultOptions = {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
   };
-  
-  return new Date(date).toLocaleDateString('en-US', {
-    ...defaultOptions,
-    ...options,
-  });
+  const loc = locale || getClientLocale();
+  try {
+    return new Date(date).toLocaleDateString(loc, {
+      ...defaultOptions,
+      ...options,
+    });
+  } catch {
+    return new Date(date).toLocaleDateString('en-US', { ...defaultOptions, ...options })
+  }
 }
 
 export function generateSlug(text) {

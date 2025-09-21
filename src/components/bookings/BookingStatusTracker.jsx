@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSocket } from '@/contexts/SocketContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -29,11 +29,25 @@ const BookingStatusTracker = ({ bookingId, onStatusUpdate }) => {
   const [realTimeUpdates, setRealTimeUpdates] = useState([]);
   const [showSimulation, setShowSimulation] = useState(false);
 
+  const fetchBookingStatus = useCallback(async () => {
+    try {
+      const response = await fetch(`/api/bookings/${bookingId}`);
+      if (response.ok) {
+        const data = await response.json();
+        setBooking(data.booking);
+      }
+    } catch (error) {
+      console.error('Error fetching booking:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [bookingId]);
+
   useEffect(() => {
     if (bookingId) {
       fetchBookingStatus();
     }
-  }, [bookingId]);
+  }, [bookingId, fetchBookingStatus]);
 
   useEffect(() => {
     if (!socket) return;
@@ -85,21 +99,8 @@ const BookingStatusTracker = ({ bookingId, onStatusUpdate }) => {
       socket.off('payment_processed');
       socket.off('booking_created');
     };
-  }, [socket, bookingId, onStatusUpdate]);
+  }, [socket, bookingId, onStatusUpdate, fetchBookingStatus]);
 
-  const fetchBookingStatus = async () => {
-    try {
-      const response = await fetch(`/api/bookings/${bookingId}`);
-      if (response.ok) {
-        const data = await response.json();
-        setBooking(data.booking);
-      }
-    } catch (error) {
-      console.error('Error fetching booking:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleSimulateFlow = async () => {
     if (!socket) return;

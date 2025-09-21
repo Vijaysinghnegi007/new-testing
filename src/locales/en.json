@@ -1,0 +1,88 @@
+{
+  "nav": {
+    "home": "Home",
+    "tours": "Tours",
+    "destinations": "Destinations",
+    "about": "About",
+    "contact": "Contact"
+  },
+  "actions": {
+    "signIn": "Sign In",
+    "viewAllTours": "View All Tours",
+    "viewDetails": "View Details",
+    "addToItinerary": "Add to Itinerary",
+    "exploreTours": "Explore Tours",
+    "watchVideo": "Watch Video",
+    "searchTours": "Search Tours",
+    "backHome": "Back to Home"
+  },
+  "settings": {
+    "accountTitle": "Account Settings",
+    "accountSubtitle": "Manage your account preferences and notification settings",
+    "authRequired": "Authentication Required",
+    "signInPrompt": "Please sign in to access your settings.",
+    "quickActions": "Quick Actions",
+    "quickActionsSubtitle": "Test your notification settings",
+    "testBrowserNotification": "Test Browser Notification",
+    "testRealtime": "Test Real-time Features"
+  },
+  "home": {
+    "featured": {
+      "title": "Featured Tours",
+      "desc": "Discover our most popular and highly-rated travel experiences, carefully selected for unforgettable adventures."
+    },
+    "popular": {
+      "title": "Popular Destinations",
+      "desc": "Explore the world's most sought-after travel destinations."
+    },
+    "why": {
+      "title": "Why Choose TravelWeb?",
+      "desc": "We make your travel dreams come true with our exceptional services.",
+      "card1": { "title": "Expert Local Guides", "text": "Our experienced local guides provide authentic insights and unforgettable experiences at every destination." },
+      "card2": { "title": "Exceptional Quality", "text": "We maintain the highest standards of service quality, ensuring every moment of your journey is perfect." },
+      "card3": { "title": "Memorable Experiences", "text": "Create lasting memories with our carefully curated experiences and personalized attention to detail." }
+    },
+    "search": { "where": "Where to?" }
+  },
+  "tours": {
+    "title": "All Tours & Experiences",
+    "subtitle": "Discover amazing destinations and create unforgettable memories with our curated travel experiences.",
+    "search": { "placeholder": "Search tours..." },
+    "loading": "Loading tours...",
+    "found": "Tours Found",
+    "sortBy": "Sort by:",
+    "sort": {
+      "priceAsc": "Price: Low to High",
+      "priceDesc": "Price: High to Low",
+      "rating": "Rating",
+      "duration": "Duration"
+    },
+    "categories": {
+      "all": "All",
+      "adventure": "Adventure",
+      "cultural": "Cultural",
+      "luxury": "Luxury",
+      "family": "Family"
+    },
+    "perPerson": "per person"
+  },
+  "destinations": {
+    "title": "Explore Destinations",
+    "subtitle": "Discover amazing places around the world and plan your next adventure",
+    "filterBy": "Filter by:",
+    "continent": "Continent:",
+    "type": "Type:",
+    "found": "destinations found",
+    "climate": "Climate",
+    "bestTime": "Best time",
+    "highlights": "Highlights:",
+    "more": "more",
+    "topToursIn": "Top Tours in",
+    "none": "No tours available yet for this destination."
+  },
+  "hero": {
+    "headline": "Discover Your Next Adventure",
+    "subtitle": "Explore breathtaking destinations and create unforgettable memories with our expertly curated travel experiences."
+  }
+}
+

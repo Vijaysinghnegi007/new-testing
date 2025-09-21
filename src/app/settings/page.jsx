@@ -16,8 +16,11 @@ import {
   ArrowLeft
 } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
+import { useI18n } from '@/contexts/I18nContext';
 
 export default function SettingsPage() {
+  const { t } = useI18n();
   const { data: session, status } = useSession();
 
   if (status === 'loading') {
@@ -39,9 +42,9 @@ export default function SettingsPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <Card className="max-w-md mx-auto">
             <CardHeader>
-              <CardTitle className="text-center">Authentication Required</CardTitle>
+              <CardTitle className="text-center">{t('settings.authRequired', 'Authentication Required')}</CardTitle>
               <CardDescription className="text-center">
-                Please sign in to access your settings.
+                {t('settings.signInPrompt', 'Please sign in to access your settings.')}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -64,7 +67,7 @@ export default function SettingsPage() {
             <Button variant="outline" size="sm" asChild>
               <Link href="/">
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Home
+                {t('actions.backHome', 'Back to Home')}
               </Link>
             </Button>
           </div>
@@ -72,11 +75,11 @@ export default function SettingsPage() {
           <div className="flex items-center gap-3 mb-2">
             <Settings className="h-8 w-8 text-primary" />
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-              Account Settings
+              {t('settings.accountTitle', 'Account Settings')}
             </h1>
           </div>
           <p className="text-lg text-gray-600 dark:text-gray-300">
-            Manage your account preferences and notification settings
+            {t('settings.accountSubtitle', 'Manage your account preferences and notification settings')}
           </p>
         </div>
 
@@ -136,11 +139,13 @@ export default function SettingsPage() {
               </CardHeader>
               <CardContent>
                 <div className="flex items-center gap-3">
-                  {session.user.image ? (
-                    <img
+{session.user.image ? (
+                    <Image
                       src={session.user.image}
                       alt={session.user.name || 'User'}
-                      className="h-12 w-12 rounded-full"
+                      width={48}
+                      height={48}
+                      className="rounded-full"
                     />
                   ) : (
                     <div className="h-12 w-12 rounded-full bg-primary flex items-center justify-center">
@@ -174,10 +179,10 @@ export default function SettingsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Smartphone className="h-5 w-5" />
-                  Quick Actions
+                  {t('settings.quickActions', 'Quick Actions')}
                 </CardTitle>
                 <CardDescription>
-                  Test your notification settings
+                  {t('settings.quickActionsSubtitle', 'Test your notification settings')}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -199,13 +204,13 @@ export default function SettingsPage() {
                     }}
                   >
                     <Bell className="h-4 w-4 mr-2" />
-                    Test Browser Notification
+                    {t('settings.testBrowserNotification', 'Test Browser Notification')}
                   </Button>
                   
                   <Button variant="outline" size="sm" asChild>
                     <Link href="/demo/realtime">
                       <Smartphone className="h-4 w-4 mr-2" />
-                      Test Real-time Features
+                      {t('settings.testRealtime', 'Test Real-time Features')}
                     </Link>
                   </Button>
                 </div>

@@ -1,4 +1,6 @@
 import React from 'react'
+import Link from 'next/link'
+import Image from 'next/image'
 import { prisma } from '@/lib/prisma'
 
 export async function generateMetadata({ params }) {
@@ -17,7 +19,7 @@ export default async function BlogDetailPage({ params }) {
       <div className="min-h-[50vh] flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold">Post not found</h1>
-          <a href="/blog" className="text-primary underline">Back to blog</a>
+          <Link href="/blog" prefetch={false} className="text-primary underline">Back to blog</Link>
         </div>
       </div>
     )
@@ -29,8 +31,8 @@ export default async function BlogDetailPage({ params }) {
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-4xl font-bold mb-2">{post.title}</h1>
           <p className="text-muted-foreground mb-8 text-sm">{new Date(post.createdAt).toLocaleDateString()}</p>
-          {post.featuredImage && (
-            <img src={post.featuredImage} alt={post.title} className="w-full rounded mb-8" />
+{post.featuredImage && (
+            <Image src={post.featuredImage} alt={post.title} width={1200} height={630} className="w-full h-auto rounded mb-8" />
           )}
           {post.content && (
             <div className="prose prose-slate dark:prose-invert" dangerouslySetInnerHTML={{ __html: post.content }} />

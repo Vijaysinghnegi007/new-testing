@@ -13,6 +13,7 @@ import {
   Calendar,
   BarChart3,
   Settings,
+  CheckSquare,
   Menu,
   X,
   LogOut,
@@ -82,6 +83,12 @@ const AdminLayout = ({ children, title = 'Dashboard' }) => {
       current: pathname.startsWith('/admin/messages'),
       badge: 3,
       badgeColor: 'bg-blue-100 text-blue-800'
+    },
+    {
+      name: 'Tasks',
+      href: '/admin/tasks',
+      icon: CheckSquare,
+      current: pathname.startsWith('/admin/tasks')
     },
     {
       name: 'Reports',

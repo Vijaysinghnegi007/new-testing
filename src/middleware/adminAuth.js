@@ -6,7 +6,7 @@ export async function requireAdmin(request) {
   const session = await getServerSession(authOptions);
   
   if (!session || !session.user) {
-    return NextResponse.redirect(new URL('/auth/signin?callbackUrl=/admin', request.url));
+    return NextResponse.redirect(new URL('/auth/signin', request.url));
   }
   
   if (session.user.role !== 'ADMIN') {

@@ -6,6 +6,7 @@ const nextConfig = {
       { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
       { protocol: 'https', hostname: 'scontent.com' },
       { protocol: 'https', hostname: 'images.pexels.com' },
+      { protocol: 'https', hostname: 'res.cloudinary.com' },
     ],
     formats: ['image/webp', 'image/avif'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],

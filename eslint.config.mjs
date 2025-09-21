@@ -20,6 +20,31 @@ const eslintConfig = [
       "next-env.d.ts",
     ],
   },
+  // Disallow next/dynamic in non-client files to avoid RSC errors
+  {
+    files: ["**/*.{js,jsx,ts,tsx}"],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ["next/dynamic"],
+              message:
+                "Use next/dynamic only inside client components. Create a *.client.* wrapper and import that from server components.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  // Allow next/dynamic inside dedicated client wrappers
+  {
+    files: ["**/*.client.{js,jsx,ts,tsx}"],
+    rules: {
+      'no-restricted-imports': 'off',
+    },
+  },
 ];
 
 export default eslintConfig;

@@ -186,6 +186,39 @@ The application uses a comprehensive database schema with:
 - Availability checking
 - Recommendation engine
 
+## 📦 Environment Variables
+
+Copy .env.example to .env.local and set values:
+- NEXTAUTH_URL, NEXTAUTH_SECRET
+- DATABASE_URL
+- NEXT_PUBLIC_SENTRY_DSN (optional), SENTRY_TRACES_SAMPLE_RATE (optional)
+- NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY, STRIPE_SECRET_KEY (optional)
+- REDIS_URL (optional)
+
+## 🚀 Deployment
+
+- Vercel (recommended):
+  - Link the project in Vercel, set environment variables in Project Settings -> Environment Variables.
+  - Build command: next build
+  - Install command: npm ci
+  - Output: .next
+- Self-host: run npm run build && npm start (uses server.js custom server)
+
+## 📊 Observability & Analytics
+
+- Vercel Analytics is enabled globally via `<Analytics />`. No config required when deployed on Vercel.
+- Optional Sentry error monitoring is available. Set `NEXT_PUBLIC_SENTRY_DSN` in env to enable (and optionally `SENTRY_TRACES_SAMPLE_RATE`).
+
+## 🧪 Testing
+
+- Unit tests with Jest + Testing Library
+  - `npm test`
+  - Config in `jest.config.js`; setup in `tests/setupTests.js`
+
+## 🤖 CI
+
+- GitHub Actions workflow at `.github/workflows/ci.yml` runs lint, tests, and build on push/PR to main.
+
 ## 🚀 Available Scripts
 
 ```bash
