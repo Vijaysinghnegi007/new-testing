@@ -1,9 +1,7 @@
 'use client'
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { io } from 'socket.io-client';
 import { useSession } from 'next-auth/react';
-import { toast } from 'react-toastify';
 
 const SocketContext = createContext();
 
@@ -27,98 +25,115 @@ export const SocketProvider = ({ children }) => {
   const { data: session } = useSession();
 
   useEffect(() => {
-    if (session?.user) {
-      // Initialize socket connection
-      const socketInstance = io({
-        transports: ['websocket', 'polling'],
-        timeout: 20000,
-        forceNew: true
-      });
+    if (!session?.user) return;
 
-      setSocket(socketInstance);
+    let cleanup = () => {};
 
-      // Connection event handlers
-      socketInstance.on('connect', () => {
-        setIsConnected(true);
-        console.log('Socket connected:', socketInstance.id);
-        
-        // Authenticate user
-        socketInstance.emit('authenticate', {
-          id: session.user.id,
-          email: session.user.email,
-          name: session.user.name || `${session.user.firstName} ${session.user.lastName}`,
-          role: session.user.role
-        });
-        
-        // Join default room
-        socketInstance.emit('join_room', currentRoom);
-      });
-
-      socketInstance.on('authenticated', async (data) => {
-        console.log('User authenticated:', data);
-        
-        // Load existing notifications from database
-        try {
-          const response = await fetch('/api/notifications?limit=50');
-          if (response.ok) {
-            const data = await response.json();
-            setNotifications(data.notifications || []);
-            setUnreadCount(data.unreadCount || 0);
-          }
-        } catch (error) {
-          console.error('Error loading notifications:', error);
-        }
-      });
-
-      socketInstance.on('disconnect', (reason) => {
-        setIsConnected(false);
-        console.log('Socket disconnected:', reason);
-      });
-
-      socketInstance.on('connect_error', (error) => {
-        console.error('Socket connection error:', error);
-        setIsConnected(false);
-      });
-
-      // Chat message handlers
-      socketInstance.on('new_message', (messageData) => {
-        setMessages(prev => [...prev, messageData]);
-      });
-
-      socketInstance.on('user_typing_start', (data) => {
-        setTypingUsers(prev => {
-          if (!prev.find(user => user.userId === data.userId)) {
-            return [...prev, data];
-          }
-          return prev;
-        });
-      });
-
-      socketInstance.on('user_typing_stop', (data) => {
-        setTypingUsers(prev => prev.filter(user => user.userId !== data.userId));
-      });
-
-      // Notification handlers
-      socketInstance.on('notification', (notification) => {
-        console.log('New notification:', notification);
-        addNotification(notification);
-        
-        // Show toast notification
-        if (notification.type === 'booking') {
-          toast.success(notification.title);
-        } else if (notification.type === 'payment') {
-          toast.success(notification.title);
-        } else if (notification.type === 'system') {
-          toast.warning(notification.title);
+    const start = () => {
+      // Defer heavy client import until we actually need it
+      const idle = (cb) => {
+        if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+          window.requestIdleCallback(cb, { timeout: 2000 });
         } else {
-          toast.info(notification.title);
+          setTimeout(cb, 250);
         }
-      });
-
-      return () => {
-        socketInstance.disconnect();
       };
-    }
+
+      idle(async () => {
+        const { io } = await import('socket.io-client');
+        const socketInstance = io({
+          transports: ['websocket', 'polling'],
+          timeout: 20000,
+          forceNew: true
+        });
+
+        setSocket(socketInstance);
+
+        // Connection event handlers
+        socketInstance.on('connect', () => {
+          setIsConnected(true);
+          
+          // Authenticate user
+          socketInstance.emit('authenticate', {
+            id: session.user.id,
+            email: session.user.email,
+            name: session.user.name || `${session.user.firstName} ${session.user.lastName}`,
+            role: session.user.role
+          });
+          
+          // Join default room
+          socketInstance.emit('join_room', currentRoom);
+        });
+
+        socketInstance.on('authenticated', async (data) => {
+          // Load existing notifications from database
+          try {
+            const response = await fetch('/api/notifications?limit=50');
+            if (response.ok) {
+              const data = await response.json();
+              setNotifications(data.notifications || []);
+              setUnreadCount(data.unreadCount || 0);
+            }
+          } catch (error) {
+            console.error('Error loading notifications:', error);
+          }
+        });
+
+        socketInstance.on('disconnect', (reason) => {
+          setIsConnected(false);
+        });
+
+        socketInstance.on('connect_error', (error) => {
+          console.error('Socket connection error:', error);
+          setIsConnected(false);
+        });
+
+        // Chat message handlers
+        socketInstance.on('new_message', (messageData) => {
+          setMessages(prev => [...prev, messageData]);
+        });
+
+        socketInstance.on('user_typing_start', (data) => {
+          setTypingUsers(prev => {
+            if (!prev.find(user => user.userId === data.userId)) {
+              return [...prev, data];
+            }
+            return prev;
+          });
+        });
+
+        socketInstance.on('user_typing_stop', (data) => {
+          setTypingUsers(prev => prev.filter(user => user.userId !== data.userId));
+        });
+
+        // Notification handlers (lazy toast import on demand)
+        socketInstance.on('notification', async (notification) => {
+          addNotification(notification);
+          try {
+            const mod = await import('react-toastify');
+            const toast = mod.toast;
+            const kind = (notification.type || '').toLowerCase();
+            if (kind === 'booking' || kind === 'payment') {
+              toast.success(notification.title);
+            } else if (kind === 'system') {
+              toast.warning(notification.title);
+            } else {
+              toast.info(notification.title);
+            }
+          } catch (e) {
+            console.error('Failed to load toast library', e);
+          }
+        });
+
+        cleanup = () => {
+          try { socketInstance.disconnect(); } catch {}
+        };
+      });
+    };
+
+    start();
+
+    return () => cleanup();
   }, [session, currentRoom]);
 
   // Helper functions

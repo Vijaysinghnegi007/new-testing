@@ -123,7 +123,7 @@ export default function AdminDashboard() {
     if (status === 'loading') return;
     
     if (status === 'unauthenticated') {
-      router.push('/auth/signin?callbackUrl=/admin');
+      router.push('/auth/signin');
       return;
     }
     
@@ -159,6 +159,16 @@ export default function AdminDashboard() {
   return (
     <AdminLayout title="Dashboard">
       <div className="space-y-6">
+        {/* Project Status */}
+        <div>
+          {/** Project status widget */}
+          {typeof window !== 'undefined' && (
+            require('@/components/admin/ProjectStatus.jsx').default ? (
+              React.createElement(require('@/components/admin/ProjectStatus.jsx').default)
+            ) : null
+          )}
+        </div>
+
         {/* Welcome Section */}
         <div className="bg-gradient-to-r from-primary to-primary-hover rounded-lg p-6 text-white">
           <div className="flex items-center justify-between">

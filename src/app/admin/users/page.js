@@ -128,7 +128,7 @@ export default function AdminUsers() {
     if (status === 'loading') return;
     
     if (status === 'unauthenticated') {
-      router.push('/auth/signin?callbackUrl=/admin/users');
+      router.push('/auth/signin');
       return;
     }
     

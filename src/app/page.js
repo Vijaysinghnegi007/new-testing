@@ -2,6 +2,8 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
+import HomeHero from '@/components/home/HomeHero.client';
+import T from '@/components/common/T.jsx';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Search,
@@ -17,6 +19,8 @@ import {
   TreePine,
   Building
 } from 'lucide-react';
+
+export const revalidate = 3600;
 
 export default function Home() {
   // Sample featured tours data
@@ -74,75 +78,15 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section 
-        className="relative h-screen bg-cover bg-center bg-no-repeat flex items-center justify-center"
-        style={{
-          backgroundImage: "linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=1920&h=1080&fit=crop')"
-        }}
-      >
-        <div className="text-center text-white max-w-4xl mx-auto px-4">
-          <h1 className="text-5xl md:text-7xl font-bold mb-6">
-            Discover Your Next
-            <span className="text-blue-400"> Adventure</span>
-          </h1>
-          <p className="text-xl md:text-2xl mb-8 text-gray-200">
-            Explore breathtaking destinations and create unforgettable memories with our expertly curated travel experiences.
-          </p>
-          
-          {/* Search Bar */}
-          <div className="bg-white rounded-lg p-6 shadow-2xl max-w-4xl mx-auto mb-8">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="flex items-center space-x-2 text-gray-600">
-                <MapPin className="h-5 w-5" />
-                <input
-                  type="text"
-                  placeholder="Where to?"
-                  className="flex-1 outline-none text-gray-900"
-                />
-              </div>
-              <div className="flex items-center space-x-2 text-gray-600">
-                <Calendar className="h-5 w-5" />
-                <input
-                  type="date"
-                  className="flex-1 outline-none text-gray-900"
-                />
-              </div>
-              <div className="flex items-center space-x-2 text-gray-600">
-                <Users className="h-5 w-5" />
-                <select className="flex-1 outline-none text-gray-900">
-                  <option>2 Guests</option>
-                  <option>1 Guest</option>
-                  <option>3 Guests</option>
-                  <option>4+ Guests</option>
-                </select>
-              </div>
-              <Button variant="gradient" className="h-12">
-                <Search className="h-5 w-5 mr-2" />
-                Search Tours
-              </Button>
-            </div>
-          </div>
-          
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button variant="premium" size="xl">
-              Explore Tours
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-            <Button variant="outline" size="xl" className="text-white border-white hover:bg-white hover:text-black backdrop-blur-sm">
-              Watch Video
-              <Plane className="ml-2 h-5 w-5" />
-            </Button>
-          </div>
-        </div>
-      </section>
+      <HomeHero />
 
       {/* Featured Tours Section */}
       <section className="py-16 bg-section-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-foreground mb-4">Featured Tours</h2>
+            <h2 className="text-4xl font-bold text-foreground mb-4"><T k="home.featured.title" f="Featured Tours" /></h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Discover our most popular and highly-rated travel experiences, carefully selected for unforgettable adventures.
+              <T k="home.featured.desc" f="Discover our most popular and highly-rated travel experiences, carefully selected for unforgettable adventures." />
             </p>
           </div>
           
@@ -214,8 +158,8 @@ export default function Home() {
                     <span className="text-sm text-muted-foreground">per person</span>
                   </div>
                   <Button variant="gradient" asChild>
-                    <Link href={`/tours/${tour.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}`}>
-                      View Details
+<Link prefetch={false} href={`/tours/${tour.title.toLowerCase().replace(/\\s+/g, '-').replace(/[^a-z0-9-]/g, '')}`}>
+                <T k="actions.viewDetails" f="View Details" />
                     </Link>
                   </Button>
                 </CardFooter>
@@ -225,8 +169,8 @@ export default function Home() {
           
           <div className="text-center mt-12">
             <Button variant="outline" size="lg" asChild>
-              <Link href="/tours">
-                View All Tours
+<Link href="/tours" prefetch={false}>
+                <T k="actions.viewAllTours" f="View All Tours" />
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
@@ -238,9 +182,9 @@ export default function Home() {
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-foreground mb-4">Popular Destinations</h2>
+            <h2 className="text-4xl font-bold text-foreground mb-4"><T k="home.popular.title" f="Popular Destinations" /></h2>
             <p className="text-xl text-muted-foreground">
-              Explore the world&apos;s most sought-after travel destinations.
+              <T k="home.popular.desc" f="Explore the world's most sought-after travel destinations." />
             </p>
           </div>
           
@@ -273,9 +217,9 @@ export default function Home() {
       <section className="py-16 bg-section-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-foreground mb-4">Why Choose TravelWeb?</h2>
+            <h2 className="text-4xl font-bold text-foreground mb-4"><T k="home.why.title" f="Why Choose TravelWeb?" /></h2>
             <p className="text-xl text-muted-foreground">
-              We make your travel dreams come true with our exceptional services.
+              <T k="home.why.desc" f="We make your travel dreams come true with our exceptional services." />
             </p>
           </div>
           
@@ -284,9 +228,9 @@ export default function Home() {
               <div className="bg-gradient-to-br from-primary to-primary-hover w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <MapPin className="h-8 w-8 text-white" />
               </div>
-              <h3 className="text-xl font-semibold text-foreground mb-2">Expert Local Guides</h3>
+              <h3 className="text-xl font-semibold text-foreground mb-2"><T k="home.why.card1.title" f="Expert Local Guides" /></h3>
               <p className="text-muted-foreground">
-                Our experienced local guides provide authentic insights and unforgettable experiences at every destination.
+                <T k="home.why.card1.text" f="Our experienced local guides provide authentic insights and unforgettable experiences at every destination." />
               </p>
             </div>
             
@@ -294,9 +238,9 @@ export default function Home() {
               <div className="bg-gradient-to-br from-primary to-primary-hover w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <Star className="h-8 w-8 text-white" />
               </div>
-              <h3 className="text-xl font-semibold text-foreground mb-2">Exceptional Quality</h3>
+              <h3 className="text-xl font-semibold text-foreground mb-2"><T k="home.why.card2.title" f="Exceptional Quality" /></h3>
               <p className="text-muted-foreground">
-                We maintain the highest standards of service quality, ensuring every moment of your journey is perfect.
+                <T k="home.why.card2.text" f="We maintain the highest standards of service quality, ensuring every moment of your journey is perfect." />
               </p>
             </div>
             
@@ -304,9 +248,9 @@ export default function Home() {
               <div className="bg-gradient-to-br from-primary to-primary-hover w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <Camera className="h-8 w-8 text-white" />
               </div>
-              <h3 className="text-xl font-semibold text-foreground mb-2">Memorable Experiences</h3>
+              <h3 className="text-xl font-semibold text-foreground mb-2"><T k="home.why.card3.title" f="Memorable Experiences" /></h3>
               <p className="text-muted-foreground">
-                Create lasting memories with our carefully curated experiences and personalized attention to detail.
+                <T k="home.why.card3.text" f="Create lasting memories with our carefully curated experiences and personalized attention to detail." />
               </p>
             </div>
           </div>

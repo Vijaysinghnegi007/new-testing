@@ -128,7 +128,7 @@ export default function AdminBookings() {
     if (status === 'loading') return;
     
     if (status === 'unauthenticated') {
-      router.push('/auth/signin?callbackUrl=/admin/bookings');
+      router.push('/auth/signin');
       return;
     }
     

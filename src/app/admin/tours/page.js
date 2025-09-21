@@ -155,7 +155,7 @@ export default function AdminTours() {
     if (status === 'loading') return;
     
     if (status === 'unauthenticated') {
-      router.push('/auth/signin?callbackUrl=/admin/tours');
+      router.push('/auth/signin');
       return;
     }
     

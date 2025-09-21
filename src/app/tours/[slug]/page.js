@@ -23,120 +23,9 @@ import {
   Shield,
   Award
 } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
 import { formatPrice, formatDate } from '@/lib/utils';
-
-// Mock tour data (in production, this would come from API/database)
-const getTourBySlug = (slug) => {
-  const tours = {
-    'bali-cultural-adventure': {
-      id: 1,
-      title: "Bali Cultural Adventure",
-      slug: "bali-cultural-adventure",
-      destination: "Bali, Indonesia",
-      description: "Immerse yourself in the rich cultural heritage of Bali with this comprehensive 7-day journey. Experience ancient temples, traditional villages, authentic cuisine, and breathtaking landscapes that make Bali truly magical.",
-      longDescription: `
-        Discover the heart and soul of Bali on this extraordinary cultural adventure. Over 7 unforgettable days, you'll explore ancient Hindu temples, witness traditional Balinese ceremonies, learn about local crafts, and taste authentic cuisine in family-run warungs.
-
-        Our expert local guides will take you off the beaten path to hidden gems that most tourists never see. From the terraced rice fields of Jatiluwih to the artistic village of Mas, every day brings new discoveries and authentic cultural encounters.
-
-        This tour is perfect for travelers who want to go beyond the surface and truly understand Balinese culture, traditions, and way of life.
-      `,
-      images: [
-        "https://images.unsplash.com/photo-1537953773345-d172ccf13cf1?w=800&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?w=800&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1544531586-fbb6c80cd02b?w=800&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1552733407-5d5c46c3bb3b?w=800&h=600&fit=crop"
-      ],
-      duration: 7,
-      maxGroupSize: 12,
-      minAge: 16,
-      difficulty: "Easy",
-      price: 1299,
-      originalPrice: 1599,
-      rating: 4.8,
-      reviews: 245,
-      category: "Cultural",
-      highlights: [
-        "Visit ancient temples including Tanah Lot and Besakih",
-        "Explore traditional villages and meet local families",
-        "Learn traditional Balinese cooking",
-        "Witness a traditional Kecak fire dance",
-        "Trek through stunning rice terraces",
-        "Visit local art workshops and galleries"
-      ],
-      included: [
-        "Accommodation in traditional Balinese guesthouses",
-        "All meals as specified in itinerary",
-        "Professional English-speaking guide",
-        "Transportation in comfortable AC vehicle",
-        "All entrance fees and permits",
-        "Cultural workshop experiences",
-        "Airport transfers"
-      ],
-      excluded: [
-        "International flights",
-        "Travel insurance",
-        "Personal expenses and souvenirs",
-        "Alcoholic beverages",
-        "Tips for guides and drivers",
-        "Optional activities not mentioned"
-      ],
-      itinerary: [
-        {
-          day: 1,
-          title: "Arrival in Ubud",
-          activities: ["Airport pickup", "Check-in to traditional guesthouse", "Welcome dinner with local family"],
-          meals: ["Dinner"]
-        },
-        {
-          day: 2,
-          title: "Temples and Villages",
-          activities: ["Visit Tirta Empul holy spring temple", "Explore Penglipuran traditional village", "Traditional weaving workshop"],
-          meals: ["Breakfast", "Lunch", "Dinner"]
-        },
-        {
-          day: 3,
-          title: "Rice Terraces and Culture",
-          activities: ["Sunrise at Jatiluwih rice terraces", "Traditional farming experience", "Balinese cooking class"],
-          meals: ["Breakfast", "Lunch", "Dinner"]
-        },
-        {
-          day: 4,
-          title: "Art and Craft Villages",
-          activities: ["Visit Mas wood carving village", "Silver jewelry workshop in Celuk", "Traditional painting class"],
-          meals: ["Breakfast", "Lunch", "Dinner"]
-        },
-        {
-          day: 5,
-          title: "Spiritual Journey",
-          activities: ["Visit Besakih Mother Temple", "Meditation session with local monk", "Traditional purification ceremony"],
-          meals: ["Breakfast", "Lunch", "Dinner"]
-        },
-        {
-          day: 6,
-          title: "Coastal Temples",
-          activities: ["Tanah Lot temple at sunset", "Local market visit", "Kecak fire dance performance"],
-          meals: ["Breakfast", "Lunch", "Dinner"]
-        },
-        {
-          day: 7,
-          title: "Departure",
-          activities: ["Final breakfast", "Souvenir shopping", "Airport transfer"],
-          meals: ["Breakfast"]
-        }
-      ],
-      availability: [
-        { date: "2024-03-15", available: true, price: 1299 },
-        { date: "2024-03-22", available: true, price: 1299 },
-        { date: "2024-04-05", available: false, price: 1299 },
-        { date: "2024-04-12", available: true, price: 1399 },
-      ]
-    }
-  };
-  
-  return tours[slug] || null;
-};
+import ReviewsSection from '@/components/reviews/ReviewsSection';
 
 export default function TourDetailPage() {
   const params = useParams();
@@ -148,13 +37,35 @@ export default function TourDetailPage() {
   const [selectedDate, setSelectedDate] = useState('');
   const [travelers, setTravelers] = useState(2);
   const [isWishlisted, setIsWishlisted] = useState(false);
+  const [wishProcessing, setWishProcessing] = useState(false);
 
   useEffect(() => {
-    if (params.slug) {
-      const tourData = getTourBySlug(params.slug);
-      setTour(tourData);
-      setLoading(false);
-    }
+    const fetchTour = async () => {
+      if (!params.slug) return;
+      try {
+        setLoading(true);
+        const res = await fetch(`/api/tours/${params.slug}`);
+        if (!res.ok) {
+          setTour(null);
+          setLoading(false);
+          return;
+        }
+        const data = await res.json();
+        const t = data.tour;
+        setTour(t);
+        // Preselect first available date if present
+        if (t?.availability?.length) {
+          const first = t.availability.find(a => a.available) || t.availability[0];
+          if (first?.date) setSelectedDate(first.date);
+        }
+      } catch (e) {
+        console.error('Failed to load tour', e);
+        setTour(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTour();
   }, [params.slug]);
 
   const handleBookNow = () => {
@@ -171,7 +82,7 @@ export default function TourDetailPage() {
       duration: tour.duration,
       price: tour.price,
       category: tour.category,
-      image: tour.images[0]
+      image: tour.images?.[0]
     };
 
     // Create URL parameters for booking page
@@ -185,9 +96,63 @@ export default function TourDetailPage() {
     router.push(`/booking?${params.toString()}`);
   };
 
-  const handleWishlist = () => {
-    setIsWishlisted(!isWishlisted);
-    toast.success(isWishlisted ? 'Removed from wishlist' : 'Added to wishlist');
+  useEffect(() => {
+    // When user is logged in and tour is loaded, check wishlist status
+    const checkWishlist = async () => {
+      try {
+        if (!tour?.id || !session?.user) return;
+        const res = await fetch('/api/wishlist');
+        if (!res.ok) return;
+        const data = await res.json();
+        const exists = (data.items || []).some((it) => it.tourId === tour.id || it.tour?.id === tour.id);
+        setIsWishlisted(exists);
+      } catch (e) {
+        // silent fail
+      }
+    };
+    checkWishlist();
+  }, [tour?.id, session?.user]);
+
+  const handleWishlist = async () => {
+    if (!tour?.id) return;
+    if (!session?.user) {
+      toast.error('Please sign in to use wishlist');
+      router.push('/auth/signin');
+      return;
+    }
+    if (wishProcessing) return;
+    setWishProcessing(true);
+    try {
+      if (isWishlisted) {
+        const res = await fetch('/api/wishlist', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ tourId: tour.id }),
+        });
+        if (res.ok) {
+          setIsWishlisted(false);
+          toast.success('Removed from wishlist');
+        } else {
+          toast.error('Failed to remove from wishlist');
+        }
+      } else {
+        const res = await fetch('/api/wishlist', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ tourId: tour.id }),
+        });
+        if (res.ok) {
+          setIsWishlisted(true);
+          toast.success('Added to wishlist');
+        } else {
+          toast.error('Failed to add to wishlist');
+        }
+      }
+    } catch (e) {
+      toast.error('Wishlist action failed');
+    } finally {
+      setWishProcessing(false);
+    }
   };
 
   const handleShare = async () => {
@@ -216,6 +181,27 @@ export default function TourDetailPage() {
       </div>
     );
   }
+
+  const jsonLd = tour ? {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: tour.title,
+    description: tour.description,
+    image: Array.isArray(tour.images) ? tour.images : [],
+    brand: { '@type': 'Brand', name: 'TravelWeb' },
+    category: tour.category,
+    aggregateRating: tour.rating ? {
+      '@type': 'AggregateRating',
+      ratingValue: String(tour.rating || 0),
+      reviewCount: String(tour.reviews || 0)
+    } : undefined,
+    offers: {
+      '@type': 'Offer',
+      price: String(tour.price || 0),
+      priceCurrency: 'USD',
+      availability: (tour.availability?.some(a => a.available)) ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock'
+    }
+  } : null;
 
   if (!tour) {
     return (
@@ -249,14 +235,66 @@ export default function TourDetailPage() {
                 variant="ghost" 
                 size="icon" 
                 onClick={handleWishlist}
+                disabled={wishProcessing}
+                aria-pressed={isWishlisted}
                 className={isWishlisted ? 'text-red-500' : ''}
               >
                 <Heart className={`h-4 w-4 ${isWishlisted ? 'fill-current' : ''}`} />
+              </Button>
+              <Button variant="outline" onClick={() => {
+                try {
+                  const raw = localStorage.getItem('tripDraft')
+                  const draft = raw ? JSON.parse(raw) : { title: 'My Trip', days: 1, items: [] }
+                  const title = tour?.title || 'Tour'
+                  draft.items.push({ day: 1, orderIndex: draft.items.length, tourId: tour.id, title })
+                  localStorage.setItem('tripDraft', JSON.stringify(draft))
+                  router.push('/itinerary/builder')
+                } catch {
+                  router.push('/itinerary/builder')
+                }
+              }}>
+                Add to Itinerary
               </Button>
             </div>
           </div>
         </div>
       </div>
+
+      {/* JSON-LD SEO */}
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
+
+      {/* Destination info */}
+      {tour.destinationInfo && (
+        <div className="bg-white border-b">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div className="flex items-center justify-between text-sm text-muted-foreground">
+              <div className="flex items-center space-x-2">
+                <MapPin className="h-4 w-4" />
+                <span>
+                  {tour.destinationInfo.city ? `${tour.destinationInfo.city}, ` : ''}
+                  {tour.destinationInfo.state ? `${tour.destinationInfo.state}, ` : ''}
+                  {tour.destinationInfo.country || tour.destination}
+                </span>
+              </div>
+              {tour.destinationInfo.latitude && tour.destinationInfo.longitude && (
+                <a
+                  className="text-primary hover:underline"
+                  href={`https://www.google.com/maps?q=${tour.destinationInfo.latitude},${tour.destinationInfo.longitude}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  View on Maps
+                </a>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -509,6 +547,13 @@ export default function TourDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Reviews */}
+      {tour?.id && (
+        <div className="mt-8">
+          <ReviewsSection tourId={tour.id} />
+        </div>
+      )}
     </div>
   );
 }

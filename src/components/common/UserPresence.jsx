@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useSocket } from '@/contexts/SocketContext';
 
 const UserPresence = ({ 
@@ -12,6 +12,20 @@ const UserPresence = ({
   const { socket } = useSocket();
   const [presence, setPresence] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
+
+  const fetchPresence = useCallback(async () => {
+    try {
+      const response = await fetch(`/api/users/presence/${userId}`);
+      if (response.ok) {
+        const data = await response.json();
+        setPresence(data);
+      }
+    } catch (error) {
+      console.error('Error fetching user presence:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [userId]);
 
   React.useEffect(() => {
     if (!userId) return;
@@ -33,21 +47,7 @@ const UserPresence = ({
         socket.off('presence_update');
       }
     };
-  }, [userId, socket]);
-
-  const fetchPresence = async () => {
-    try {
-      const response = await fetch(`/api/users/presence/${userId}`);
-      if (response.ok) {
-        const data = await response.json();
-        setPresence(data);
-      }
-    } catch (error) {
-      console.error('Error fetching user presence:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [userId, socket, fetchPresence]);
 
   const formatLastSeen = (timestamp) => {
     if (!timestamp) return 'Never';

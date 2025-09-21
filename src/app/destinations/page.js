@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import T from '@/components/common/T.jsx';
 import {
   Search,
   MapPin,
@@ -188,28 +189,31 @@ export default function DestinationsPage() {
       >
         <div className="text-center text-white max-w-4xl mx-auto px-4">
           <h1 className="text-5xl md:text-6xl font-bold mb-6">
-            Explore <span className="text-blue-400">Destinations</span>
+            <T k="destinations.title" f="Explore Destinations" />
           </h1>
           <p className="text-xl md:text-2xl text-gray-200 mb-8">
-            Discover amazing places around the world and plan your next adventure
+            <T k="destinations.subtitle" f="Discover amazing places around the world and plan your next adventure" />
           </p>
           
           {/* Search Bar */}
-          <div className="bg-white rounded-lg p-4 shadow-2xl max-w-2xl mx-auto">
+          <form className="bg-white rounded-lg p-4 shadow-2xl max-w-2xl mx-auto" action={async (formData) => (await import('./search-actions')).searchDestinationsAction(formData)}>
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2 flex-1">
                 <Search className="h-5 w-5 text-gray-400" />
                 <input
                   type="text"
+                  name="q"
                   placeholder="Search destinations..."
+                  defaultValue={typeof window === 'undefined' ? '' : new URLSearchParams(window.location.search).get('q') || ''}
                   className="flex-1 outline-none text-gray-900 text-lg"
+                  aria-label="Search destinations"
                 />
               </div>
-              <Button variant="gradient" size="lg">
+              <Button variant="gradient" size="lg" type="submit" aria-label="Submit search">
                 Search
               </Button>
             </div>
-          </div>
+          </form>
         </div>
       </section>
 
@@ -219,12 +223,12 @@ export default function DestinationsPage() {
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center space-x-2">
               <Filter className="h-5 w-5 text-muted-foreground" />
-              <span className="text-foreground font-medium">Filter by:</span>
+              <span className="text-foreground font-medium"><T k="destinations.filterBy" f="Filter by:" /></span>
             </div>
             
             <div className="flex flex-wrap gap-4">
               <div className="flex items-center space-x-2">
-                <span className="text-sm text-muted-foreground">Continent:</span>
+                <span className="text-sm text-muted-foreground"><T k="destinations.continent" f="Continent:" /></span>
                 <select className="bg-card border border-border rounded-md px-3 py-1 text-sm">
                   {continents.map(continent => (
                     <option key={continent} value={continent}>{continent}</option>
@@ -233,7 +237,7 @@ export default function DestinationsPage() {
               </div>
               
               <div className="flex items-center space-x-2">
-                <span className="text-sm text-muted-foreground">Type:</span>
+                <span className="text-sm text-muted-foreground"><T k="destinations.type" f="Type:" /></span>
                 <select className="bg-card border border-border rounded-md px-3 py-1 text-sm">
                   {types.map(type => (
                     <option key={type} value={type}>{type}</option>
@@ -243,7 +247,7 @@ export default function DestinationsPage() {
             </div>
             
             <div className="text-sm text-muted-foreground">
-              {destinations.length} destinations found
+              {destinations.length} <T k="destinations.found" f="destinations found" />
             </div>
           </div>
         </div>
@@ -307,20 +311,20 @@ export default function DestinationsPage() {
                         <ClimateIcon className="h-4 w-4 text-muted-foreground" />
                         <div>
                           <div className="font-medium text-foreground">{destination.climate}</div>
-                          <div className="text-muted-foreground">Climate</div>
+                          <div className="text-muted-foreground"><T k="destinations.climate" f="Climate" /></div>
                         </div>
                       </div>
                       <div className="flex items-center space-x-2">
                         <Sun className="h-4 w-4 text-muted-foreground" />
                         <div>
                           <div className="font-medium text-foreground">{destination.bestTime}</div>
-                          <div className="text-muted-foreground">Best time</div>
+                          <div className="text-muted-foreground"><T k="destinations.bestTime" f="Best time" /></div>
                         </div>
                       </div>
                     </div>
                     
                     <div>
-                      <div className="text-sm font-medium text-foreground mb-2">Highlights:</div>
+                      <div className="text-sm font-medium text-foreground mb-2"><T k="destinations.highlights" f="Highlights:" /></div>
                       <div className="flex flex-wrap gap-1">
                         {destination.highlights.slice(0, 3).map((highlight, index) => (
                           <span key={index} className="bg-muted text-muted-foreground px-2 py-1 rounded text-xs">
@@ -329,7 +333,7 @@ export default function DestinationsPage() {
                         ))}
                         {destination.highlights.length > 3 && (
                           <span className="text-xs text-muted-foreground px-2 py-1">
-                            +{destination.highlights.length - 3} more
+                            +{destination.highlights.length - 3} <T k="destinations.more" f="more" />
                           </span>
                         )}
                       </div>

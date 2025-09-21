@@ -2,12 +2,14 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import Image from 'next/image';
+import { usePathname, useRouter } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { cn } from '@/lib/utils';
 import { useSocket } from '@/contexts/SocketContext';
+import { useI18n } from '@/contexts/I18nContext';
 import { 
   MapPin, 
   Menu, 
@@ -19,16 +21,31 @@ import {
   LogOut,
   Settings,
   CreditCard,
-  Bell
+  Bell,
+  Briefcase
 } from 'lucide-react';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [canPrefetch, setCanPrefetch] = useState(true);
   const pathname = usePathname();
   const { data: session, status } = useSession();
   const { notifications, unreadCount, toggleNotificationPanel } = useSocket();
   const userMenuRef = useRef(null);
+
+  // Decide if link prefetching should be enabled based on network conditions
+  useEffect(() => {
+    try {
+      const conn = typeof navigator !== 'undefined' ? navigator.connection : undefined;
+      if (!conn) return; // keep default true
+      const fastEnough = conn.effectiveType === '4g';
+      const saverOff = conn.saveData !== true;
+      setCanPrefetch(Boolean(fastEnough && saverOff));
+    } catch {
+      // keep default true
+    }
+  }, []);
 
   // Close user menu when clicking outside
   useEffect(() => {
@@ -44,12 +61,14 @@ const Header = () => {
     };
   }, []);
 
+  const { t, setLocale, locale } = useI18n();
+
   const navigation = [
-    { name: 'Home', href: '/' },
-    { name: 'Tours', href: '/tours' },
-    { name: 'Destinations', href: '/destinations' },
-    { name: 'About', href: '/about' },
-    { name: 'Contact', href: '/contact' },
+    { key: 'home', href: '/' },
+    { key: 'tours', href: '/tours' },
+    { key: 'destinations', href: '/destinations' },
+    { key: 'about', href: '/about' },
+    { key: 'contact', href: '/contact' },
   ];
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
@@ -72,14 +91,15 @@ const Header = () => {
           <nav className="hidden md:flex space-x-8">
             {navigation.map((item) => (
               <Link
-                key={item.name}
+                key={item.key}
                 href={item.href}
+                prefetch={canPrefetch}
                 className={cn(
                   'text-muted-foreground hover:text-foreground px-3 py-2 rounded-md text-sm font-medium transition-colors',
                   pathname === item.href && 'text-primary bg-accent'
                 )}
               >
-                {item.name}
+                {t(`nav.${item.key}`, item.key)}
               </Link>
             ))}
           </nav>
@@ -92,8 +112,10 @@ const Header = () => {
             </Button>
             
             {/* Wishlist */}
-            <Button variant="ghost" size="icon">
-              <Heart className="h-5 w-5" />
+            <Button variant="ghost" size="icon" asChild aria-label="Wishlist">
+              <Link href="/wishlist" prefetch={false}>
+                <Heart className="h-5 w-5" />
+              </Link>
             </Button>
             
             {/* Bookings */}
@@ -118,6 +140,11 @@ const Header = () => {
               </Button>
             )}
             
+            {/* Language Switcher */}
+            <div className="flex items-center gap-1">
+              <Button variant={locale === 'en' ? 'default' : 'outline'} size="sm" onClick={() => setLocale('en')}>EN</Button>
+              <Button variant={locale === 'es' ? 'default' : 'outline'} size="sm" onClick={() => setLocale('es')}>ES</Button>
+            </div>
             {/* Theme Toggle */}
             <ThemeToggle />
             
@@ -136,10 +163,12 @@ const Header = () => {
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                 >
                   {session.user.image ? (
-                    <img
+                    <Image
                       src={session.user.image}
                       alt={session.user.name || 'User'}
-                      className="h-6 w-6 rounded-full"
+                      width={24}
+                      height={24}
+                      className="rounded-full"
                     />
                   ) : (
                     <User className="h-4 w-4" />
@@ -161,22 +190,29 @@ const Header = () => {
                       </p>
                     </div>
                     
-                    <Link href="/settings" className="flex items-center px-3 py-2 text-sm text-foreground hover:bg-accent">
+                    <Link href="/settings" prefetch={false} className="flex items-center px-3 py-2 text-sm text-foreground hover:bg-accent">
                       <Settings className="h-4 w-4 mr-2" />
                       Account Settings
                     </Link>
                     
-                    <Link href="/profile" className="flex items-center px-3 py-2 text-sm text-foreground hover:bg-accent">
+                    {(session.user.role === 'VENDOR' || session.user.role === 'ADMIN') && (
+                      <Link href="/vendor" prefetch={false} className="flex items-center px-3 py-2 text-sm text-foreground hover:bg-accent">
+                        <Briefcase className="h-4 w-4 mr-2" />
+                        Vendor Portal
+                      </Link>
+                    )}
+                    
+                    <Link href="/profile" prefetch={false} className="flex items-center px-3 py-2 text-sm text-foreground hover:bg-accent">
                       <User className="h-4 w-4 mr-2" />
                       Profile
                     </Link>
                     
-                    <Link href="/bookings" className="flex items-center px-3 py-2 text-sm text-foreground hover:bg-accent">
+                    <Link href="/bookings" prefetch={false} className="flex items-center px-3 py-2 text-sm text-foreground hover:bg-accent">
                       <CreditCard className="h-4 w-4 mr-2" />
                       My Bookings
                     </Link>
                     
-                    <Link href="/wishlist" className="flex items-center px-3 py-2 text-sm text-foreground hover:bg-accent">
+                    <Link href="/wishlist" prefetch={false} className="flex items-center px-3 py-2 text-sm text-foreground hover:bg-accent">
                       <Heart className="h-4 w-4 mr-2" />
                       Wishlist
                     </Link>
@@ -228,7 +264,7 @@ const Header = () => {
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
               {navigation.map((item) => (
                 <Link
-                  key={item.name}
+                  key={item.key}
                   href={item.href}
                   className={cn(
                     'text-muted-foreground hover:text-foreground block px-3 py-2 rounded-md text-base font-medium transition-colors',
@@ -236,7 +272,7 @@ const Header = () => {
                   )}
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  {item.name}
+                  {t(`nav.${item.key}`, item.key)}
                 </Link>
               ))}
             </div>

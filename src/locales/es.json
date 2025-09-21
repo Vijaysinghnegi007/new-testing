@@ -1,0 +1,88 @@
+{
+  "nav": {
+    "home": "Inicio",
+    "tours": "Tours",
+    "destinations": "Destinos",
+    "about": "Acerca de",
+    "contact": "Contacto"
+  },
+  "actions": {
+    "signIn": "Iniciar sesión",
+    "viewAllTours": "Ver todos los tours",
+    "viewDetails": "Ver detalles",
+    "addToItinerary": "Añadir al itinerario",
+    "exploreTours": "Explorar tours",
+    "watchVideo": "Ver video",
+    "searchTours": "Buscar tours",
+    "backHome": "Volver al inicio"
+  },
+  "settings": {
+    "accountTitle": "Configuración de la cuenta",
+    "accountSubtitle": "Administra las preferencias de tu cuenta y las notificaciones",
+    "authRequired": "Autenticación requerida",
+    "signInPrompt": "Inicia sesión para acceder a tu configuración.",
+    "quickActions": "Acciones rápidas",
+    "quickActionsSubtitle": "Prueba tu configuración de notificaciones",
+    "testBrowserNotification": "Probar notificación del navegador",
+    "testRealtime": "Probar funciones en tiempo real"
+  },
+  "home": {
+    "featured": {
+      "title": "Tours destacados",
+      "desc": "Descubre nuestras experiencias más populares y mejor valoradas, seleccionadas cuidadosamente para aventuras inolvidables."
+    },
+    "popular": {
+      "title": "Destinos populares",
+      "desc": "Explora los destinos más buscados del mundo."
+    },
+    "why": {
+      "title": "¿Por qué elegir TravelWeb?",
+      "desc": "Hacemos realidad tus sueños de viaje con nuestros servicios excepcionales.",
+      "card1": { "title": "Guías locales expertos", "text": "Nuestros guías locales brindan conocimientos auténticos y experiencias inolvidables en cada destino." },
+      "card2": { "title": "Calidad excepcional", "text": "Mantenemos los más altos estándares de calidad, asegurando que cada momento de tu viaje sea perfecto." },
+      "card3": { "title": "Experiencias memorables", "text": "Crea recuerdos duraderos con nuestras experiencias cuidadosamente seleccionadas y atención personalizada." }
+    },
+    "search": { "where": "¿A dónde?" }
+  },
+  "tours": {
+    "title": "Todos los tours y experiencias",
+    "subtitle": "Descubre destinos increíbles y crea recuerdos inolvidables con nuestras experiencias seleccionadas.",
+    "search": { "placeholder": "Buscar tours..." },
+    "loading": "Cargando tours...",
+    "found": "tours encontrados",
+    "sortBy": "Ordenar por:",
+    "sort": {
+      "priceAsc": "Precio: de menor a mayor",
+      "priceDesc": "Precio: de mayor a menor",
+      "rating": "Valoración",
+      "duration": "Duración"
+    },
+    "categories": {
+      "all": "Todos",
+      "adventure": "Aventura",
+      "cultural": "Cultural",
+      "luxury": "Lujo",
+      "family": "Familiar"
+    },
+    "perPerson": "por persona"
+  },
+  "destinations": {
+    "title": "Explora destinos",
+    "subtitle": "Descubre lugares increíbles en todo el mundo y planea tu próxima aventura",
+    "filterBy": "Filtrar por:",
+    "continent": "Continente:",
+    "type": "Tipo:",
+    "found": "destinos encontrados",
+    "climate": "Clima",
+    "bestTime": "Mejor época",
+    "highlights": "Lo mejor:",
+    "more": "más",
+    "topToursIn": "Mejores tours en",
+    "none": "No hay tours disponibles todavía para este destino."
+  },
+  "hero": {
+    "headline": "Descubre tu próxima aventura",
+    "subtitle": "Explora destinos impresionantes y crea recuerdos inolvidables con nuestras experiencias de viaje cuidadosamente seleccionadas."
+  }
+}
+
