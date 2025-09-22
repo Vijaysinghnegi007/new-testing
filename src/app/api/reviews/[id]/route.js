@@ -4,11 +4,15 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 
 export async function DELETE(_request, { params }) {
+  const DEMO = String(process.env.DEMO_MODE || '').toLowerCase() === 'true' || process.env.DEMO_MODE === '1'
   try {
     const session = await getServerSession(authOptions)
     if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
     const id = params.id
+    if (DEMO) {
+      return NextResponse.json({ success: true })
+    }
     const review = await prisma.review.findUnique({ where: { id } })
     if (!review) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 

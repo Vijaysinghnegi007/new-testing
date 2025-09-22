@@ -2,8 +2,12 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
 export async function POST(_request, { params }) {
+  const DEMO = String(process.env.DEMO_MODE || '').toLowerCase() === 'true' || process.env.DEMO_MODE === '1'
   try {
     const id = params.id
+    if (DEMO) {
+      return NextResponse.json({ success: true })
+    }
     await prisma.review.update({
       where: { id },
       data: { helpfulVotes: { increment: 1 } },

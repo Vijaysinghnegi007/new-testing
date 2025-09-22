@@ -45,7 +45,7 @@ export default async function DestinationDetailPage({ params }) {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-3">
           <h1 className="text-2xl font-bold">Destination Unavailable</h1>
-          <p className="text-muted-foreground">We couldn\'t load this destination right now. Please try again later.</p>
+          <p className="text-muted-foreground">We couldn&apos;t load this destination right now. Please try again later.</p>
           <Link href="/destinations" className="text-primary underline">Back to destinations</Link>
         </div>
       </div>

@@ -13,7 +13,7 @@ import { cookies } from 'next/headers';
 import { Analytics } from '@vercel/analytics/react'
 
 export async function generateMetadata() {
-  const locale = cookies().get('LOCALE')?.value || 'en';
+  const locale = (await cookies()).get('LOCALE')?.value || 'en';
   const isEs = locale === 'es';
   const title = isEs ? 'TravelWeb - Descubre destinos increíbles' : 'TravelWeb - Discover Amazing Destinations';
   const description = isEs

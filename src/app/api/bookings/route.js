@@ -4,9 +4,26 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
 export async function POST(request) {
+  const DEMO = String(process.env.DEMO_MODE || '').toLowerCase() === 'true' || process.env.DEMO_MODE === '1'
   try {
     const session = await getServerSession(authOptions);
     const bookingData = await request.json();
+
+    if (DEMO) {
+      const bookingId = `TW${Date.now()}${Math.random().toString(36).substr(2, 4).toUpperCase()}`;
+      return NextResponse.json({
+        bookingId,
+        status: 'success',
+        message: 'Booking created (demo mode)'.trim(),
+        booking: {
+          id: bookingId,
+          bookingId,
+          startDate: bookingData.startDate,
+          totalPrice: bookingData.totalPrice,
+          status: 'CONFIRMED'
+        }
+      })
+    }
 
 // Generate unique booking ID (fallback, but primary key in DB is id; bookingNumber is separate)
     // Keep compatibility with caller expecting bookingId
@@ -71,14 +88,22 @@ return NextResponse.json({
 }
 
 export async function GET(request) {
+  const DEMO = String(process.env.DEMO_MODE || '').toLowerCase() === 'true' || process.env.DEMO_MODE === '1'
   try {
     const session = await getServerSession(authOptions);
     
     if (!session?.user?.id) {
+      if (DEMO) {
+        return NextResponse.json({ bookings: [] })
+      }
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       );
+    }
+
+    if (DEMO) {
+      return NextResponse.json({ bookings: [] })
     }
 
     // Get user's bookings

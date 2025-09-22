@@ -4,6 +4,7 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 
 export async function GET(request) {
+  const DEMO = String(process.env.DEMO_MODE || '').toLowerCase() === 'true' || process.env.DEMO_MODE === '1'
   try {
     const { searchParams } = new URL(request.url)
     const tourId = searchParams.get('tourId')
@@ -45,11 +46,15 @@ export async function GET(request) {
     })
   } catch (e) {
     console.error('GET /api/reviews error', e)
+    if (DEMO) {
+      return NextResponse.json({ average: 0, count: 0, items: [], page: 1, pageSize: 10 })
+    }
     return NextResponse.json({ error: 'Failed to load reviews' }, { status: 500 })
   }
 }
 
 export async function POST(request) {
+  const DEMO = String(process.env.DEMO_MODE || '').toLowerCase() === 'true' || process.env.DEMO_MODE === '1'
   try {
     const session = await getServerSession(authOptions)
     if (!session?.user?.id) {
@@ -67,6 +72,13 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Invalid input' }, { status: 400 })
     }
 
+    if (DEMO) {
+      // In demo mode, accept and return a mock review without DB
+      return NextResponse.json({ success: true, review: {
+        id: 'demo-review', userId: session.user.id || 'demo-user', tourId, rating, title, comment,
+        images: null, isVerified: true,
+      } })
+    }
     // Ensure tour exists and is active
     const tour = await prisma.tour.findUnique({ where: { id: tourId }, select: { id: true } })
     if (!tour) {
