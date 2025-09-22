@@ -66,6 +66,41 @@ export const authOptions = {
           throw new Error('Missing email or password');
         }
 
+        // Demo mode: allow fixed test credentials without a database
+        const DEMO_MODE = String(process.env.DEMO_MODE || '').toLowerCase() === 'true' || process.env.DEMO_MODE === '1';
+        if (DEMO_MODE) {
+          const adminEmail = process.env.DEMO_ADMIN_EMAIL || 'admin@example.com';
+          const adminPass = process.env.DEMO_ADMIN_PASSWORD || 'Passw0rd!';
+          const userEmail = process.env.DEMO_USER_EMAIL || 'user@example.com';
+          const userPass = process.env.DEMO_USER_PASSWORD || 'Passw0rd!';
+
+          if (credentials.email === adminEmail && credentials.password === adminPass) {
+            return {
+              id: 'demo-admin',
+              email: adminEmail,
+              name: 'Demo Admin',
+              firstName: 'Demo',
+              lastName: 'Admin',
+              role: 'ADMIN',
+              image: null,
+            };
+          }
+          if (credentials.email === userEmail && credentials.password === userPass) {
+            return {
+              id: 'demo-user',
+              email: userEmail,
+              name: 'Demo User',
+              firstName: 'Demo',
+              lastName: 'User',
+              role: 'USER',
+              image: null,
+            };
+          }
+          // If demo mode is on but credentials don't match, deny
+          throw new Error('Invalid credentials');
+        }
+
+        // Normal DB-backed auth flow
         const user = await prisma.user.findUnique({
           where: { email: credentials.email },
         });
